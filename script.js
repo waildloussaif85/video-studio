@@ -1,4 +1,4 @@
-const translations = {
+zconst translations = {
     en: {
         title: "TikTok & Reels Video Maker",
         btn: "Generate Video Now 🔥",
@@ -206,6 +206,25 @@ async function generateVideo() {
         }
 
         drawFrame();
+// كود لحقن إعلان Adsterra تلقائياً في أعلى الواجهة الأساسية
+window.addEventListener('DOMContentLoaded', () => {
+    const appContainer = document.querySelector('.app-container');
+    if (appContainer) {
+        const adIframe = document.createElement('iframe');
+        adIframe.src = '/ad.html'; 
+        adIframe.width = '320';
+        adIframe.height = '50';
+        adIframe.frameBorder = '0';
+        adIframe.scrolling = 'no';
+        adIframe.style.display = 'block';
+        adIframe.style.margin = '10px auto';
+        adIframe.style.border = 'none';
+        adIframe.style.background = 'transparent';
+
+        // يضع الإعلان الفوق كأول عنصر داخل التطبيق
+        appContainer.insertBefore(adIframe, appContainer.firstChild);
+    }
+});
 
         setTimeout(() => { mediaRecorder.stop(); }, 10000);
 
