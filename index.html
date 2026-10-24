@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,20 +8,20 @@
 </head>
 <body>
 
-    <!-- واجهة الغلاف الترحيبية -->
-    <div id="splash-screen" class="splash-container">
+    <!-- 1. واجهة الغلاف الترحيبية -->
+    <div id="splashScreen" class="splash-container">
         <div class="splash-content">
             <div class="splash-logo">🎬</div>
             <h1 class="splash-title">AI Video Studio</h1>
             <p class="splash-subtitle">Create TikToks & Reels in Seconds</p>
-            <button class="splash-btn" onclick="enterApp()">Start Creating 🚀</button>
+            <button class="splash-btn">Start Creating 🚀</button>
         </div>
     </div>
 
     <div class="bg-blur"></div>
 
-    <!-- الواجهة الأساسية للتطبيق -->
-    <div class="app-container">
+    <!-- 2. الواجهة الأساسية للتطبيق محاطة بالكادر النيون -->
+    <div id="appContainer" class="app-container">
         <div class="lang-switcher">
             <button onclick="switchLanguage('en')">EN</button>
             <button onclick="switchLanguage('ar')">العربية</button>
@@ -30,66 +30,57 @@
         <div class="logo">🎬 <span id="lbl-title">TikTok & Reels Video Maker</span></div>
 
         <div class="input-section">
-            <textarea id="videoText" placeholder="Enter your text here..."></textarea>
-            
-            <!-- لوحة التحكم المدمجة والمصغرة مع زر خيار حركة النص الجديد -->
-            <div class="controls-panel">
-                <div class="control-row">
-                    <div class="control-item">
-                        <label id="lbl-size">الحجم:</label>
-                        <input type="range" id="textSizeSlider" min="24" max="65" value="44">
-                    </div>
-                    <div class="control-item">
-                        <label id="lbl-vol">الصوت:</label>
-                        <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5">
-                    </div>
-                </div>
-
-                <div class="control-row colors">
-                    <div class="color-item">
-                        <label id="lbl-color">الخط:</label>
-                        <input type="color" id="textColorPicker" value="#ffffff">
-                    </div>
-                    <div class="color-item">
-                        <label id="lbl-bg">الخلفية:</label>
-                        <input type="color" id="bgColorPicker" value="#1a1c23">
-                    </div>
-                    <!-- زر التحكم في تنشيط الحركة مثل سيناريو الإخراج -->
-                    <div class="motion-item">
-                        <input type="checkbox" id="motionCheckbox" checked>
-                        <label for="motionCheckbox" id="lbl-motion">نص متحرك</label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- أزرار الرفع المدمجة الصغيرة -->
-            <div class="upload-grid">
-                <label for="imageFile" class="mini-upload-btn">
-                    📸 <span id="lbl-image">Image</span>
-                </label>
-                <input type="file" id="imageFile" accept="image/*" style="display:none;">
-
-                <label for="audioFile" class="mini-upload-btn">
-                    🎵 <span id="lbl-audio">Music</span>
-                </label>
-                <input type="file" id="audioFile" accept="audio/*" style="display:none;">
-            </div>
-            <div id="fileStatusMessage" class="file-status"></div>
-
-            <button id="lbl-btn" class="generate-btn" onclick="generateVideo()">Generate Video Now 🔥</button>
-            <p id="statusMessage"></p>
+            <textarea id="videoText" placeholder="اكتب النص هنا..."></textarea>
         </div>
 
-        <!-- صندوق المعاينة الواسع وزر الحفظ النهائي المباشر -->
+        <!-- إعدادات التحكم والأزرار والمصغرة -->
+        <div class="controls-panel">
+            <div class="control-row">
+                <div class="control-item">
+                    <label id="lbl-size">الحجم:</label>
+                    <input type="range" id="fontSize" min="20" max="60" value="40">
+                </div>
+                <div class="control-item">
+                    <label id="lbl-audio">الصوت:</label>
+                    <input type="range" id="audioVolume" min="0" max="100" value="50">
+                </div>
+            </div>
+
+            <div class="control-row colors">
+                <div class="color-item">
+                    <label id="lbl-font">الخط:</label>
+                    <input type="color" id="fontColor" value="#ff0000">
+                </div>
+                <div class="color-item">
+                    <label id="lbl-bg">الخلفية:</label>
+                    <input type="color" id="bgColor" value="#000000">
+                </div>
+                <div class="motion-item">
+                    <input type="checkbox" id="motionText" checked>
+                    <label id="lbl-motion">نص متحرك</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- أزرار رفع الملفات والميديا -->
+        <div class="upload-grid">
+            <label for="imageFile" class="mini-upload-btn" id="lbl-imageBtn">📷 Image</label>
+            <input type="file" id="imageFile" accept="image/*" style="display: none;">
+
+            <label for="audioFile" class="mini-upload-btn" id="lbl-audioBtn">🎵 Music</label>
+            <input type="file" id="audioFile" accept="audio/*" style="display: none;">
+        </div>
+        
+        <div class="file-status" id="fileStatusMessage"></div>
+
+        <button class="generate-btn" id="lbl-btn">Generate Video Now 🔥</button>
+
+        <div id="statusMessage"></div>
+
+        <!-- صندوق المعاينة الواسع وزر الحفظ النهائي -->
         <div id="videoPreviewBox" class="preview-section" style="display: none;">
-            <video id="videoPlayer" controls playsinline></video>
-            <br>
-            <a id="downloadLink" class="download-btn" download="generated_video.mp4">Save to Phone / حفظ 📥</a>
-        </div>
-
-        <!-- مساحة مخصصة ومحجوزة للإعلانات لتوفر لك مدخول مالي صافي -->
-        <div class="ad-space-container">
-            <div class="ad-placeholder">📢 ADS SPACE / مساحة إعلانية محجوزة</div>
+            <video id="videoPlayer" controls></video>
+            <a id="downloadLink" class="download-btn">Save to Phone / حفظ</a>
         </div>
     </div>
 
