@@ -1,237 +1,153 @@
 const translations = {
     en: {
         title: "TikTok & Reels Video Maker",
-        btn: "Generate Video Now 🔥",
-        loading: "⏳ Rendering Generic Scroll Text animation...",
-        success: "🎉 Video created successfully!",
-        error: "❌ Error processing video."
+        placeholder: "Enter your text here...",
+        size: "Size:",
+        audio: "Audio:",
+        font: "Font color:",
+        bg: "Background:",
+        motion: "Moving text",
+        generate: "Generate Video Now 🔥",
+        loading: "Processing... Please wait",
+        imageBtn: "📷 Image",
+        audioBtn: "🎵 Music",
+        imageLoaded: "📷 Image Loaded",
+        audioLoaded: "🎵 Music Loaded"
     },
     ar: {
-        title: "صانع فيديوهات تيك توك وريلز",
-        btn: "🔥 اصنع الفيديو الآن",
-        loading: "⏳ جاري تطبيق حركة الجينيريك السينمائية وتوليد الفيديو...",
-        success: "🎉 تم إنشاء الفيديو بنجاح! جاهز للحفظ",
-        error: "❌ حدث خطأ أثناء معالجة الفيديو."
-    }
-}
-
-let currentLang = 'en';
-
-function enterApp() {
-    document.getElementById('splash-screen').style.display = "none";
-}
-
-window.onload = function() {
-    const userLang = navigator.language || navigator.userLanguage;
-    if (userLang.startsWith('ar')) {
-        switchLanguage('ar');
+        title: "TikTok & Reels Video Maker",
+        placeholder: "اكتب النص هنا...",
+        size: "الحجم:",
+        audio: "الصوت:",
+        font: "الخط:",
+        bg: "الخلفية:",
+        motion: "نص متحرك",
+        generate: "Generate Video Now 🔥",
+        loading: "جاري المعالجة... يرجى الانتظار",
+        imageBtn: "📷 Image",
+        audioBtn: "🎵 Music",
+        imageLoaded: "📸 Image Loaded",
+        audioLoaded: "🎵 Music Loaded"
     }
 };
 
-function switchLanguage(lang) {
+let currentLang = 'ar';
+
+const textInput = document.getElementById('videoText');
+const sizeInput = document.getElementById('fontSize');
+const fontColorInput = document.getElementById('fontColor');
+const bgColorInput = document.getElementById('bgColor');
+const motionCheck = document.getElementById('motionText');
+const imageFileInput = document.getElementById('imageFile');
+const audioFileInput = document.getElementById('audioFile');
+const generateBtn = document.getElementById('lbl-btn');
+const statusMessage = document.getElementById('statusMessage');
+const videoPreviewBox = document.getElementById('videoPreviewBox');
+
+const lblImage = document.getElementById('lbl-imageBtn') || document.querySelector('label[for="imageFile"]');
+const lblAudio = document.getElementById('lbl-audioBtn') || document.querySelector('label[for="audioFile"]');
+
+document.addEventListener('DOMContentLoaded', () => {
+    const splash = document.getElementById('splashScreen');
+    const startBtn = document.querySelector('.splash-btn');
+    
+    if (startBtn && splash) {
+        startBtn.addEventListener('click', () => {
+            splash.style.opacity = '0';
+            splash.style.transition = 'opacity 0.4s ease';
+            setTimeout(() => { splash.style.display = 'none'; }, 400);
+        });
+    }
+    switchLanguage(currentLang);
+});
+
+window.switchLanguage = function(lang) {
     currentLang = lang;
-    document.getElementById('lbl-title').innerText = translations[lang].title;
-    document.getElementById('lbl-btn').innerText = translations[lang].btn;
-    
-    if (lang === 'ar') {
-        document.getElementById('videoText').placeholder = "أدخل النص هنا...";
-        document.getElementById('lbl-size').innerText = "الحجم:";
-        document.getElementById('lbl-vol').innerText = "الصوت:";
-        document.getElementById('lbl-color').innerText = "الخط:";
-        document.getElementById('lbl-bg').innerText = "الخلفية:";
-        document.getElementById('lbl-motion').innerText = "تحريك سينمائي";
-        document.getElementById('lbl-image').innerText = "الصورة 📸";
-        document.getElementById('lbl-audio').innerText = "الموسيقى 🎵";
-        document.body.style.direction = 'rtl';
-    } else {
-        document.getElementById('videoText').placeholder = "Enter your text here...";
-        document.getElementById('lbl-size').innerText = "Size:";
-        document.getElementById('lbl-vol').innerText = "Vol:";
-        document.getElementById('lbl-color').innerText = "Text:";
-        document.getElementById('lbl-bg').innerText = "Bg:";
-        document.getElementById('lbl-motion').innerText = "Cinematic Move";
-        document.getElementById('lbl-image').innerText = "Image 📸";
-        document.getElementById('lbl-audio').innerText = "Music 🎵";
-        document.body.style.direction = 'ltr';
-    }
+    document.querySelectorAll('[id^="lbl-"]').forEach(el => {
+        const key = el.id.replace('lbl-', '');
+        if (translations[lang][key]) { el.innerText = translations[lang][key]; }
+    });
+    if(textInput) textInput.placeholder = translations[lang].placeholder;
+};
+
+// تحديث اسم الزر عند اختيار صورة
+if(imageFileInput) {
+    imageFileInput.addEventListener('change', () => {
+        if(imageFileInput.files.length > 0 && lblImage) {
+            lblImage.innerText = translations[currentLang].imageLoaded;
+        }
+    });
 }
 
-document.getElementById('audioFile').addEventListener('change', function() {
-    updateFileStatus();
-});
-document.getElementById('imageFile').addEventListener('change', function() {
-    updateFileStatus();
-});
-
-function updateFileStatus() {
-    const audio = document.getElementById('audioFile').files.length ? "🎵 Audio Loaded" : "";
-    const img = document.getElementById('imageFile').files.length ? "📸 Image Loaded" : "";
-    document.getElementById('fileStatusMessage').innerText = [img, audio].filter(Boolean).join(' | ');
+if(audioFileInput) {
+    audioFileInput.addEventListener('change', () => {
+        if(audioFileInput.files.length > 0 && lblAudio) {
+            lblAudio.innerText = translations[currentLang].audioLoaded;
+        }
+    });
 }
 
-async function generateVideo() {
-    const videoText = document.getElementById('videoText').value;
-    const audioFiles = document.getElementById('audioFile').files;
-    const imageFiles = document.getElementById('imageFile').files;
-    
-    const chosenSize = document.getElementById('textSizeSlider').value;
-    const chosenColor = document.getElementById('textColorPicker').value;
-    const chosenBgColor = document.getElementById('bgColorPicker').value;
-    const chosenVolume = document.getElementById('volumeSlider').value;
-    const isAnimated = document.getElementById('motionCheckbox').checked;
-
-    const generateBtn = document.getElementById('lbl-btn');
-    const statusMessage = document.getElementById('statusMessage');
-    const videoPreviewBox = document.getElementById('videoPreviewBox');
-    const videoPlayer = document.getElementById('videoPlayer');
-    const downloadLink = document.getElementById('downloadLink');
-
-    if (!videoText) {
-        alert(currentLang === 'ar' ? 'الرجاء إدخال نص أولاً!' : 'Please enter text first!');
-        return;
-    }
-
+// توليد المعاينة الحية المحدثة بالصورة والحركة الرأسية
+generateBtn.addEventListener('click', () => {
     generateBtn.disabled = true;
     statusMessage.style.color = "#00f2fe";
     statusMessage.innerText = translations[currentLang].loading;
     videoPreviewBox.style.display = "none";
 
-    try {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = 720;  
-        canvas.height = 1280;
-
-        let img = null;
-        if (imageFiles.length > 0) {
-            img = new Image();
-            img.src = URL.createObjectURL(imageFiles);
-            await new Promise((resolve) => img.onload = resolve);
-        }
-
-        const stream = canvas.captureStream(30); 
-        
-        if (audioFiles.length > 0) {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const audioEl = new Audio(URL.createObjectURL(audioFiles));
-            audioEl.volume = chosenVolume; 
-
-            const audioNode = audioContext.createMediaElementSource(audioEl);
-            const dest = audioContext.createMediaStreamDestination();
-            audioNode.connect(dest);
-            audioNode.connect(audioContext.destination); 
-            audioEl.play();
-            stream.addTrack(dest.stream.getAudioTracks());
-        }
-
-        const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-        const chunks = [];
-        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-        mediaRecorder.onstop = () => {
-            const blob = new Blob(chunks, { type: 'video/mp4' });
-            const videoUrl = URL.createObjectURL(blob);
-            videoPlayer.src = videoUrl;
-            downloadLink.href = videoUrl;
-            
-            statusMessage.style.color = "#38ef7d";
-            statusMessage.innerText = translations[currentLang].success;
-            videoPreviewBox.style.display = "block";
-            generateBtn.disabled = false;
-        };
-
-        mediaRecorder.start();
-
-        let bgScale = 1.0;
-        
-        // نقطة البداية العمودية للنص: يبدأ من أسفل لو كان متحركاً جينيريك، أو في المنتصف لو كان ثابتاً
-        let currentScrollY = isAnimated ? canvas.height : canvas.height / 2;
-        const scrollSpeed = 2.2; // سرعة صعود النص للأعلى إطار بإطار كالجينيريك
-
-        function drawFrame() {
-            if (mediaRecorder.state !== "recording") return;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            if (img) {
-                bgScale += 0.0004; 
-                const w = canvas.width * bgScale;
-                const h = canvas.height * bgScale;
-                const x = (canvas.width - w) / 2;
-                const y = (canvas.height - h) / 2;
-                ctx.drawImage(img, x, y, w, h);
-
-                ctx.fillStyle = "rgba(0, 0, 0, 0.45)"; 
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            } else {
-                const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-                gradient.addColorStop(0, chosenBgColor);
-                gradient.addColorStop(0.5, '#1e1b29');
-                gradient.addColorStop(1, '#111216');
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-            }
-
-            // تحديث موقع النص عمودياً ليرتفع للأعلى ببطء وسلاسة (Generic Motion)
-            if (isAnimated) {
-                currentScrollY -= scrollSpeed;
-            }
-
-            ctx.save();
-
-            ctx.fillStyle = chosenColor; 
-            ctx.font = `bold ${chosenSize}px Arial`; 
-            ctx.textAlign = "center";
-            ctx.shadowColor = "black";
-            ctx.shadowBlur = 15;
-
-            const words = videoText.split(' ');
-            let line = '';
-            let textY = currentScrollY; 
-            const fontSizeParsed = parseInt(chosenSize);
-            const lineHeight = fontSizeParsed + 20; 
-
-            for (let n = 0; n < words.length; n++) {
-                let testLine = line + words[n] + ' ';
-                if (ctx.measureText(testLine).width > canvas.width - 120 && n > 0) {
-                    ctx.fillText(line, canvas.width / 2, textY);
-                    line = words[n] + ' ';
-                    textY += lineHeight;
-                } else { line = testLine; }
-            }
-            ctx.fillText(line, canvas.width / 2, textY);
-
-            ctx.restore();
-
-            requestAnimationFrame(drawFrame);
-        }
-
-        drawFrame();
-
-        setTimeout(() => { mediaRecorder.stop(); }, 10000);
-
-    } catch (error) {
-        console.error(error);
-        statusMessage.style.color = "#fe2c55";
-        statusMessage.innerText = translations[currentLang].error;
+    setTimeout(() => {
+        statusMessage.innerText = "";
+        videoPreviewBox.style.display = "block";
         generateBtn.disabled = false;
-    }
-}
-// كود لحقن إعلان Adsterra تلقائياً في أعلى الواجهة الأساسية
-window.addEventListener('DOMContentLoaded', () => {
-    const appContainer = document.querySelector('.app-container');
-    if (appContainer) {
-        const adIframe = document.createElement('iframe');
-        adIframe.src = '/ad.html'; 
-        adIframe.width = '320';
-        adIframe.height = '50';
-        adIframe.frameBorder = '0';
-        adIframe.scrolling = 'no';
-        adIframe.style.display = 'block';
-        adIframe.style.margin = '10px auto';
-        adIframe.style.border = 'none';
-        adIframe.style.background = 'transparent';
 
-        // يضع الإعلان الفوق كأول عنصر داخل التطبيق
-        appContainer.insertBefore(adIframe, appContainer.firstChild);
-    }
+        // مراجعة وجود صورة خلفية مرفوعة
+        let bgStyle = `background: ${bgColorInput.value};`;
+        if (imageFileInput && imageFileInput.files && imageFileInput.files.length > 0) {
+            const imgURL = URL.createObjectURL(imageFileInput.files[0]);
+            bgStyle = `background-image: url('${imgURL}'); background-size: cover; background-position: center;`;
+        }
+        
+        // بناء صندوق المعاينة بالخلفية المحدثة
+        videoPreviewBox.innerHTML = `
+            <div id="livePreviewCanvas" style="
+                width: 100%; 
+                height: 280px; 
+                border-radius: 12px; 
+                ${bgStyle}
+                display: flex; 
+                justify-content: center; 
+                align-items: center; 
+                overflow: hidden;
+                position: relative;
+                box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            ">
+                <div id="previewTextNode" style="
+                    color: ${fontColorInput.value}; 
+                    font-size: ${sizeInput.value}px; 
+                    font-weight: bold;
+                    text-align: center;
+                    position: absolute;
+                    width: 100%;
+                ">${textInput.value || "AI Studio"}</div>
+            </div>
+            <a id="downloadLink" class="download-btn" style="margin-top: 12px; display: inline-block;">Save to Phone / حفظ</a>
+        `;
+
+        // تفعيل الحركة الرأسية (من فوق لوطة)
+        const textNode = document.getElementById('previewTextNode');
+        if (motionCheck.checked && textNode) {
+            textNode.style.animation = "moveTextVertical 4s linear infinite alternate";
+            
+            if (!document.getElementById('verticalMotionStyle')) {
+                const style = document.createElement('style');
+                style.id = 'verticalMotionStyle';
+                style.innerHTML = `
+                    @keyframes moveTextVertical {
+                        0% { top: 10%; transform: translateY(0); }
+                        100% { top: 80%; transform: translateY(-100%); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+    }, 1200);
 });
