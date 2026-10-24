@@ -1,3 +1,8 @@
+@keyframes moveGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 * {
     box-sizing: border-box;
     margin: 0;
@@ -41,6 +46,37 @@ body {
     align-items: center;
     z-index: 999;
 }
+.app-container {
+    background: rgba(11, 12, 16, 0.85); /* خلفية داكنة متناسقة مع تطبيقك */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 24px; /* زوايا دائرية ناعمة */
+    padding: 25px;
+    width: 90%;
+    max-width: 400px;
+    margin: 20px auto;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    text-align: center;
+    color: #ffffff;
+    z-index: 2; /* لتكون فوق الإضاءة الخلفية */
+    
+    /* الكادر النيون المتحرك بألوان متناسقة مع زر Generate */
+    border: 2px solid transparent;
+    background-image: linear-gradient(rgba(11, 12, 16, 0.95), rgba(11, 12, 16, 0.95)), 
+                      linear-gradient(135deg, #ff007f, #7f00ff, #00f0ff, #ff007f);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    background-size: 200% 200%;
+    animation: moveGradient 6s linear infinite;
+}
+
+/* حركة الألوان الدائرية حول الكادر */
+@keyframes moveGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 
 .splash-content {
     text-align: center;
@@ -75,8 +111,7 @@ body {
 .app-container {
     width: 100%;
     max-width: 420px;
-    background: rgba(18, 19, 24, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(18, 19, 24, 0.95);
     backdrop-filter: blur(25px);
     border-radius: 20px;
     padding: 15px;
@@ -84,6 +119,15 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    
+    /* إضافة الكادر النيون المتحرك هنا */
+    border: 3px solid transparent;
+    background-image: linear-gradient(rgba(18, 19, 24, 0.98), rgba(18, 19, 24, 0.98)), 
+                      linear-gradient(135deg, #ff007f, #7f00ff, #00f0ff, #ff007f);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    background-size: 200% 200%;
+    animation: moveGradient 4s linear infinite;
 }
 
 .lang-switcher {
@@ -266,4 +310,9 @@ video {
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.97); }
     to { opacity: 1; transform: scale(1); }
+}
+@keyframes moveGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
